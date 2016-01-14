@@ -7,10 +7,22 @@
 
 void setup() {
 	//Register all the Tinker functions
-	Spark.function("digitalread", tinkerDigitalRead);
-	Spark.function("digitalwrite", tinkerDigitalWrite);
-	Spark.function("analogread", tinkerAnalogRead);
-	Spark.function("analogwrite", tinkerAnalogWrite);
+	Particle.function("digitalread", tinkerDigitalRead);
+	Particle.function("digitalwrite", tinkerDigitalWrite);
+	Particle.function("analogread", tinkerAnalogRead);
+	Particle.function("analogwrite", tinkerAnalogWrite);
+	Particle.function("servoOpen", tinkerServoOpen);
+	Particle.function("servoClose", tinkerServoClose);
+	Particle.function("servoSet", tinkerServoSet);
+	Particle.function("servoRead", tinkerServoRead);
+	
+   servosinuse = 0;
+
+   // Mark all servo slots as free on start.
+	for (int i = 0; i < 9; i++)
+	{
+	   userservos[i].pin = -1;
+	}
 }
 
 void loop() {

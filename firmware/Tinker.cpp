@@ -4,7 +4,7 @@
 /******************************************************************************
  * Function Name  : tinkerDigitalRead
  * Description    : Reads the digital value of a given pin
- * Input          : Pin 
+ * Input          : Pin
  * Output         : None.
  * Return         : Value of the pin (0 or 1) in INT type
                     Returns a negative number on failure
@@ -66,7 +66,7 @@ int tinkerDigitalWrite(String command)
 /*******************************************************************************
  * Function Name  : tinkerAnalogRead
  * Description    : Reads the analog value of a pin
- * Input          : Pin 
+ * Input          : Pin
  * Output         : None.
  * Return         : Returns the analog value in INT type (0 to 4095)
                     Returns a negative number on failure
@@ -120,4 +120,120 @@ int tinkerAnalogWrite(String command)
 		return 1;
 	}
 	else return -2;
+}
+
+/*******************************************************************************
+ * Function Name  : tinkerServoOpen
+ * Description    : Assigns a pin to a servo and attaches it.
+ * Input          : Pin
+ * Output         : None.
+ * Return         : The servo element used on success and a negative
+ *                : number on failure
+ *******************************************************************************/
+int tinkerServoOpen(String pin)
+{
+	int servoPin, i;
+
+	//convert ascii to integer
+	int pinNumber = pin.charAt(1) - '0';
+	//Sanity check to see if the pin numbers are within limits
+	if (pinNumber< 0 || pinNumber >7) return -1;
+
+	if(pin.startsWith("D"))
+	{
+		servoPin = pinNumber;
+	}
+	else if (pin.startsWith("A"))
+	{
+		servoPin = pinNumber + 10;
+	} else
+	{
+	    return -2;
+	}
+
+	servosinuse++;
+    if (servosinuse >= 9)
+	{
+		return -3; // All servos inuse.
+	}
+
+	for (i = 0; i < 9; i++)
+	{
+		if (userservos[i].pin == -1)
+		{
+			// Zap any old attachment.
+			userservos[i].servo.detach ( );
+
+			userservos[i].pin = servoPin;
+			userservos[i].servo.attach (servoPin);
+			break;
+		}
+	}
+
+    // Return the servo array element index used.
+    return (i);
+}
+
+/*******************************************************************************
+ * Function Name  : tinkerServoClose
+ * Description    : Unassigns a pin from a servo and detaches it.
+ * Input          : servo element
+ * Output         : None.
+ * Return         : 0
+ *******************************************************************************/
+int tinkerServoClose(String command)
+{
+	//convert ascii to integer
+	int indexNumber = command.charAt(0) - '0';
+	//Sanity check to see if the element numbers are within limits
+	if (indexNumber< 0 || indexNumber >8) return -1;
+
+    userservos[indexNumber].pin = -1;
+    servosinuse--;
+    userservos[indexNumber].servo.detach ( );
+    return (0);
+}
+
+/*******************************************************************************
+ * Function Name  : tinkerServoSet
+ * Description    : Unassigns a pin from a servo and detaches it.
+ * Input          : servo element and pos value 0-179
+ * Output         : None.
+ * Return         : 0 on success or a negative number on failure
+ *******************************************************************************/
+int tinkerServoSet(String command)
+{
+    int ret = -1;
+	//convert ascii to integer
+	int indexNumber = command.charAt(0) - '0';
+	//Sanity check to see if the pin numbers are within limits
+	if (indexNumber< 0 || indexNumber >8)
+	{
+	   ret = -1;
+	}
+    else
+    {
+	   String value = command.substring(2);
+	   ret = 0;
+	   userservos[indexNumber].servo.write (value.toInt());
+    }
+
+    return (ret);
+}
+
+/*******************************************************************************
+ * Function Name  : tinkerServoRead
+ * Description    : Reads the lats value sent to the servo.
+ * Input          : servo element
+ * Output         : None.
+ * Return         : 0 on success or a negative number on failure
+ *******************************************************************************/
+int tinkerServoRead(String command)
+{
+	//convert ascii to integer
+	int indexNumber = command.charAt(0) - '0';
+	//Sanity check to see if the pin numbers are within limits
+	if (indexNumber< 0 || indexNumber >8) return -1;
+
+    return (userservos[indexNumber].servo.read ( ));
 }
