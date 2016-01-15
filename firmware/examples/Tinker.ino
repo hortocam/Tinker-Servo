@@ -5,6 +5,9 @@
 // This #include statement was automatically added by the Spark IDE.
 #include "Tinker/Tinker.h"
 
+// Globals
+int servosinuse = 0;
+
 void setup() {
 	//Register all the Tinker functions
 	Particle.function("digitalread", tinkerDigitalRead);
@@ -15,7 +18,7 @@ void setup() {
 	Particle.function("servoClose", tinkerServoClose);
 	Particle.function("servoSet", tinkerServoSet);
 	Particle.function("servoRead", tinkerServoRead);
-	
+
    servosinuse = 0;
 
    // Mark all servo slots as free on start.
