@@ -1,6 +1,27 @@
 #include "application.h"
 #include "Tinker.h"
 
+/* Globals -------------------------------------------------------------------*/
+// Allow for at least 9 servos.
+struct usrservos {
+   Servo servo;
+   int pin;
+} userservos[9];
+
+int servosinuse = 0;
+int first_call = 1;
+
+void init_servos (void)
+{
+   first_call = 1;
+	servosinuse = 0;
+
+	// Mark all servo slots as free on start.
+   for (int i = 0; i < 9; i++)
+   {
+	   userservos[i].pin = -1;
+   }
+}
 /******************************************************************************
  * Function Name  : tinkerDigitalRead
  * Description    : Reads the digital value of a given pin
@@ -133,6 +154,10 @@ int tinkerAnalogWrite(String command)
 int tinkerServoOpen(String pin)
 {
 	int servoPin, i;
+
+   if (!first_call) {
+	   init_servos ( );
+	}
 
 	//convert ascii to integer
 	int pinNumber = pin.charAt(1) - '0';
