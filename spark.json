@@ -1,6 +1,6 @@
 {
-  "name": "Tinker",
-  "author": "Christian Vallières",
+  "name": "Tinker-Servo",
+  "author": "Christian Vallières&Scott Beasley",
   "license": "GPL",
   "version": "1.0.1.1",
   "description": "Control Spark unused pins with Tinker interface in your project."
