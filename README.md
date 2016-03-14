@@ -1,1 +1,1 @@
-Control Spark unused pins with Tinker interface in your project.
+Simple calling interface for GPIO pins and the servo libary.

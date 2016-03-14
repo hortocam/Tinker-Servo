@@ -1,28 +1,55 @@
+/*
+   Tinker library with servo lib exposure.
+
+   Wiring interface by Particle.io(???)
+
+   Servo library interface by: Scott Beasley - 2016
+   ---------------------------------------------------------------------
+
+   GNU General Public License
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "application.h"
-#include "Tinker.h"
+#include "tinker_servo.h"
 
 /* Globals -------------------------------------------------------------------*/
-// Allow for at least 9 servos.
-struct usrservos {
-   Servo servo;
-   int pin;
-} userservos[9];
+USERSERVOS userservos[8];
+int servosinuse;
 
-int servosinuse = 0;
-int first_call = 1;
-
-void init_servos (void)
+void init_tinker_servo (void)
 {
-   first_call = 1;
-	servosinuse = 0;
+    servosinuse = 0;
 
-	// Mark all servo slots as free on start.
-   for (int i = 0; i < 9; i++)
-   {
-	   userservos[i].pin = -1;
-   }
+    // Mark all servo slots as free on start.
+    for (int i = 0; i < 9; i++) {
+       userservos[i].pin = -1;
+    }
+
+    //Register all the Tinker functions
+    Particle.function("digitalread", tinkerDigitalRead);
+    Particle.function("digitalwrite", tinkerDigitalWrite);
+    Particle.function("analogread", tinkerAnalogRead);
+    Particle.function("analogwrite", tinkerAnalogWrite);
+    Particle.function("servoOpen", tinkerServoOpen);
+    Particle.function("servoClose", tinkerServoClose);
+    Particle.function("servoSet", tinkerServoSet);
+    Particle.function("servoRead", tinkerServoRead);
 }
-/******************************************************************************
+
+/*******************************************************************************
  * Function Name  : tinkerDigitalRead
  * Description    : Reads the digital value of a given pin
  * Input          : Pin
@@ -101,12 +128,10 @@ int tinkerAnalogRead(String pin)
 
 	if(pin.startsWith("D"))
 	{
-		pinMode(pinNumber, INPUT);
-		return analogRead(pinNumber);
+		return -3;
 	}
 	else if (pin.startsWith("A"))
 	{
-		pinMode(pinNumber+10, INPUT);
 		return analogRead(pinNumber+10);
 	}
 	return -2;
@@ -155,10 +180,6 @@ int tinkerServoOpen(String pin)
 {
 	int servoPin, i;
 
-   if (!first_call) {
-	   init_servos ( );
-	}
-
 	//convert ascii to integer
 	int pinNumber = pin.charAt(1) - '0';
 	//Sanity check to see if the pin numbers are within limits
@@ -177,9 +198,9 @@ int tinkerServoOpen(String pin)
 	}
 
 	servosinuse++;
-    if (servosinuse >= 9)
+        if (servosinuse >= 9)
 	{
-		return -3; // All servos inuse.
+	   return -3; // All servos inuse.
 	}
 
 	for (i = 0; i < 9; i++)
@@ -195,8 +216,8 @@ int tinkerServoOpen(String pin)
 		}
 	}
 
-    // Return the servo array element index used.
-    return (i);
+  // Return the servo array element index used.
+  return (i);
 }
 
 /*******************************************************************************
@@ -208,10 +229,10 @@ int tinkerServoOpen(String pin)
  *******************************************************************************/
 int tinkerServoClose(String command)
 {
-	//convert ascii to integer
-	int indexNumber = command.charAt(0) - '0';
-	//Sanity check to see if the element numbers are within limits
-	if (indexNumber< 0 || indexNumber >8) return -1;
+    //convert ascii to integer
+    int indexNumber = command.charAt(0) - '0';
+    //Sanity check to see if the element numbers are within limits
+    if (indexNumber< 0 || indexNumber >8) return -1;
 
     userservos[indexNumber].pin = -1;
     servosinuse--;
@@ -221,56 +242,27 @@ int tinkerServoClose(String command)
 
 /*******************************************************************************
  * Function Name  : tinkerServoSet
- * Description    : Sets a servo to a servo angle.
+ * Description    : Set a servo pos.
  * Input          : servo element and pos value 0-179
  * Output         : None.
  * Return         : 0 on success or a negative number on failure
  *******************************************************************************/
 int tinkerServoSet(String command)
 {
-    int ret = -1;
+        int ret = -1;
 	//convert ascii to integer
 	int indexNumber = command.charAt(0) - '0';
 	//Sanity check to see if the pin numbers are within limits
 	if (indexNumber< 0 || indexNumber >8)
 	{
 	   ret = -1;
-	}
-    else
-    {
+	} else {
 	   String value = command.substring(2);
 	   ret = 0;
 	   userservos[indexNumber].servo.write (value.toInt());
-    }
+  }
 
-    return (ret);
-}
-
-/*******************************************************************************
- * Function Name  : tinkerServoSet_MS
- * Description    : Sets a servo with a milli sec arg.
- * Input          : servo element and pos value in milli seconds
- * Output         : None.
- * Return         : 0 on success or a negative number on failure
- *******************************************************************************/
-int tinkerServoSet_MS(String command)
-{
-    int ret = -1;
-	//convert ascii to integer
-	int indexNumber = command.charAt(0) - '0';
-	//Sanity check to see if the pin numbers are within limits
-	if (indexNumber< 0 || indexNumber >8)
-	{
-	   ret = -1;
-	}
-    else
-    {
-	   String value = command.substring(2);
-	   ret = 0;
-	   userservos[indexNumber].servo.writeMicroseconds (value.toInt());
-    }
-
-    return (ret);
+  return (ret);
 }
 
 /*******************************************************************************
@@ -282,10 +274,10 @@ int tinkerServoSet_MS(String command)
  *******************************************************************************/
 int tinkerServoRead(String command)
 {
-	//convert ascii to integer
-	int indexNumber = command.charAt(0) - '0';
-	//Sanity check to see if the pin numbers are within limits
-	if (indexNumber< 0 || indexNumber >8) return -1;
+    //convert ascii to integer
+    int indexNumber = command.charAt(0) - '0';
+    //Sanity check to see if the pin numbers are within limits
+    if (indexNumber< 0 || indexNumber >8) return -1;
 
     return (userservos[indexNumber].servo.read ( ));
 }
