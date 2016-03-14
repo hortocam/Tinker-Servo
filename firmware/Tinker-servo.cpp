@@ -23,7 +23,7 @@
 */
 
 #include "application.h"
-#include "tinker_servo.h"
+#include "tinker-servo.h"
 
 /* Globals -------------------------------------------------------------------*/
 USERSERVOS userservos[8];
@@ -249,20 +249,20 @@ int tinkerServoClose(String command)
  *******************************************************************************/
 int tinkerServoSet(String command)
 {
-        int ret = -1;
-	//convert ascii to integer
-	int indexNumber = command.charAt(0) - '0';
-	//Sanity check to see if the pin numbers are within limits
-	if (indexNumber< 0 || indexNumber >8)
-	{
-	   ret = -1;
-	} else {
-	   String value = command.substring(2);
-	   ret = 0;
-	   userservos[indexNumber].servo.write (value.toInt());
-  }
+    int ret = -1;
+    //convert ascii to integer
+    int indexNumber = command.charAt(0) - '0';
+    //Sanity check to see if the pin numbers are within limits
+    if (indexNumber< 0 || indexNumber >8)
+    {
+       ret = -1;
+    } else {
+       String value = command.substring(2);
+       ret = 0;
+       userservos[indexNumber].servo.write (value.toInt());
+    }
 
-  return (ret);
+    return (ret);
 }
 
 /*******************************************************************************
