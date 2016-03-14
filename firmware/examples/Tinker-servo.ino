@@ -23,7 +23,7 @@
 */
 
 // This #include statement was automatically added by the Particle IDE.
-#include "tinker-servo.h"
+#include "Tinker-Servo.h"
 
 
 /* This function is called once at start up ----------------------------------*/

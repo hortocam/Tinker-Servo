@@ -23,7 +23,7 @@
 */
 
 #include "application.h"
-#include "tinker-servo.h"
+#include "Tinker-Servo.h"
 
 /* Globals -------------------------------------------------------------------*/
 USERSERVOS userservos[8];
