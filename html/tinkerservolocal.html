@@ -16,8 +16,8 @@
 <link rel="stylesheet" type="text/css" href="../css/applook.css" />
 <script type="text/javascript">
     var PARTICLE_IO = 'https://api.spark.io/v1/devices/';
-		var DEVICE_ID = '';
-		var ACCESS_TOKEN = '';
+    var DEVICE_ID = '';
+    var ACCESS_TOKEN = '';
     var running_ani = false;
     var base_home = 90, left_home = 150, right_home = 90, claw_home = 60;
     function navigationCheck ( )
@@ -177,6 +177,9 @@
 	  {
 			 $('#range' + id).val (val);
 			 $('#servo' + id).val (val);
+       if ($('#mode').val ( ) == "AUTO") {
+				  setServoVal (id);
+			 }
 		}
 
 		function connServo (servo)
@@ -248,6 +251,12 @@
 			 localStorage.setItem ("PARTICLE_IO_ACCESS_TOKEN", $('#access_token').val ( ));
 		}
 
+    function deleteKeys ( )
+		{
+			 localStorage.removeItem ("PARTICLE_IO_DEV_ID");
+			 localStorage.removeItem ("PARTICLE_IO_ACCESS_TOKEN");
+		}
+
     function initIt ( )
 		{
 			 for (var i = 0; i < 10; i++) {
@@ -288,16 +297,13 @@
    			 <table>
 				  	<tr>
 			        <td><p><span style="font-weight:bold">Tinker Servo Control Panel</span></p></td>
-							<td>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							</td>
 							<td>Particle Device ID:
          				<input type="input" id="device" value="" maxlength="50" size="12" />
 							</td>
 							<td>&nbsp;&nbsp;Particle Access Token:
          				<input type="input" id="access_token" value="" maxlength="50" size="12" />
 								<button onclick="saveKeys ( )">Save Keys</button>
+                <button onclick="deleteKeys ( )">Delete Keys</button>
 							</td>
 					  </tr>
    			 </table>
